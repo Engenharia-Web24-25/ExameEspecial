@@ -22,14 +22,17 @@ namespace EW_Exame.Controllers
         // GET: Produtos
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Produtos.Include(p => p.Categoria);
-            return View(await applicationDbContext.ToListAsync());
+            var produtos = await _context.Produtos
+                .Include(p => p.Categoria)
+                .ToListAsync();
+
+            return View(produtos);
         }
 
         // GET: Produtos/Create
         public IActionResult Create()
         {
-            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Id");
+            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome");
             return View();
         }
 
@@ -40,11 +43,19 @@ namespace EW_Exame.Controllers
         {
             if (ModelState.IsValid)
             {
+                
+                produto.Username = User.Identity?.Name ?? "UtilizadorDesconhecido";
+
                 _context.Add(produto);
                 await _context.SaveChangesAsync();
+
+                
+                TempData["Mensagem"] = "Produto inserido com sucesso!";
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Id", produto.CategoriaId);
+
+            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", produto.CategoriaId);
             return View(produto);
         }
     }

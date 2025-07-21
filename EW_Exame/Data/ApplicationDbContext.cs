@@ -11,7 +11,16 @@ namespace EW_Exame.Data
         {
         }
 
-        public DbSet<EW_Exame.Models.Categoria> Categorias { get; set; } = default!;
-        public DbSet<EW_Exame.Models.Produto> Produtos { get; set; } = default!;
+        public DbSet<Categoria> Categorias { get; set; } = default!;
+        public DbSet<Produto> Produtos { get; set; } = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Categoria>()
+                .HasIndex(c => c.Nome)
+                .IsUnique(); // O "Nome" é único na base de dados
+        }
     }
 }
